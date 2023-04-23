@@ -1,0 +1,85 @@
+--E1
+--Apresente a query para listar todos os livros publicados após 2014. Ordenar pela coluna cod, em ordem crescente, as linhas.  Atenção às colunas esperadas no resultado final: cod, titulo, autor, editora, valor, publicacao, edicao, idioma
+
+select * 
+from livro 
+where publicacao >= '2015 - 01 -01'
+order by cod 
+
+--E2
+--Apresente a query para listar os 10 livros mais caros. Ordenar as linhas pela coluna valor, em ordem decrescente.  Atenção às colunas esperadas no resultado final:  titulo, valor.
+
+select titulo, valor
+from livro
+order by valor desc 
+limit 10
+
+--E3
+-- Apresente a query para listar as 5 editoras com mais livros na biblioteca. O resultado deve conter apenas as colunas quantidade, nome, estado e cidade. Ordenar as linhas pela coluna que representa a quantidade de livros em ordem decrescente.
+
+select 
+count(lv.titulo) quantidade, 
+ed.nome, 
+ende.estado, 
+ende.cidade
+from livro as lv
+left join editora as ed
+on lv.editora = ed.codeditora
+left join endereco as ende 
+on ed.endereco = ende.codendereco 
+group by ed.nome 
+limit 5
+
+--E4
+--Apresente a query para listar a quantidade de livros publicada por cada autor. Ordenar as linhas pela coluna nome (autor), em ordem crescente. Além desta, apresentar as colunas codautor, nascimento e quantidade (total de livros de sua autoria).
+
+select 
+aut.nome,
+aut.codautor,
+aut.nascimento, 
+count(lv.cod) quantidade
+from autor as aut
+left join livro as lv 
+on aut.codautor = lv.autor 
+group by aut.nome 
+order by aut.nome               
+  
+--E5
+--Apresente a query para listar o nome dos autores que publicaram livros através de editoras NÃO situadas na região sul do Brasil. Ordene o resultado pela coluna nome, em ordem crescente.
+
+Select distinct 
+Autor.nome
+From livro
+Left join autor
+On livro.autor = autor.codautor
+Left join editora 
+On livro.editora = editora.codeditora
+Left join endereco 
+On editora.endereco = endereco.codendereco
+Where
+Lower (endereco.estado) not like '%RIO GRANDE DO SUL %' and lower(endereco.estado) not like '%PARANÁ%'
+Order by autor.nome
+
+-- E6
+  --Apresente a query para listar o autor com maior número de livros publicados. O resultado deve conter apenas as colunas codautor, nome, quantidade_publicacoes.
+  
+select 
+aut.codautor,
+aut.nome,
+count(lv.cod) as quantidade_publicacoes 
+from livro as lv
+left join autor as aut 
+on lv.autor = aut.codautor 
+group by aut.codautor, aut.nome 
+order by quantidade_publicacoes desc
+limit 1
+
+-- E7
+-- Apresente a query para listar o nome dos autores com nenhuma publicação. Apresentá-los em ordem crescente.
+
+select 
+nome
+from autor 
+where 
+codautor not in (select autor from livro) 
+order by nome
